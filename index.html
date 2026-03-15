@@ -1,31 +1,3 @@
-from flask import Flask, request, redirect, url_for, render_template_string
-import requests
-from datetime import datetime
-
-app = Flask(__name__)
-
-TELEGRAM_TOKEN = "8799281877:AAE-9WAtLb5zrifnNLebL9Xiw6j1bn5RVeI"
-TELEGRAM_CHAT_ID = "622522768"
-
-
-def send_telegram(name, phone, service, comment):
-    text = f"""
-Новая заявка AqylFlow
-
-Имя: {name}
-Телефон: {phone}
-Услуга: {service}
-Комментарий: {comment if comment else "-"}
-Время: {datetime.now().strftime("%d.%m.%Y %H:%M:%S")}
-"""
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    requests.post(
-        url,
-        data={"chat_id": TELEGRAM_CHAT_ID, "text": text},
-        timeout=10
-    )
-
-
 HTML = r"""
 <!DOCTYPE html>
 <html lang="ru">
