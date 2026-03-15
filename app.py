@@ -5,7 +5,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-TELEGRAM_TOKEN = os.getenv("8799281877:AAE-9WAtLb5zrifnNLebL9Xiw6j1bn5RVeI")
+TELEGRAM_TOKEN = os.getenv("8799281877:AAHuImnbo4676epEZKKmRuMRR5skmR-0F2g")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "622522768")
 
 
