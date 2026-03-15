@@ -12,5 +12,5 @@ Build Command:
 Start Command:
 `gunicorn app:app`
 Environment Variables:
-`8799281877:AAHMhqkr4KUUES1aaRaH6lk5TeygGsIE04A`
+`8799281877:AAHuImnbo4676epEZKKmRuMRR5skmR-0F2g`
 `622522768`
