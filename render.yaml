@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: aqylflow
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: 8799281877:AAE-9WAtLb5zrifnNLebL9Xiw6j1bn5RVeI
+        sync: false
+      - key: 622522768
+        sync: false
