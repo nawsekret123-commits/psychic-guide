@@ -5,7 +5,7 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
     envVars:
-      - key: 8799281877:AAE-9WAtLb5zrifnNLebL9Xiw6j1bn5RVeI
+      - key: 8799281877:AAHuImnbo4676epEZKKmRuMRR5skmR-0F2g
         sync: false
       - key: 622522768
         sync: false
