@@ -1,76 +1,52 @@
-from flask import Flask, request, redirect, url_for, render_template
-import requests
 import os
+import requests
+from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
 
-TELEGRAM_TOKEN = os.getenv("8799281877:AAHuImnbo4676epEZKKmRuMRR5skmR-0F2g")
-TELEGRAM_CHAT_ID = os.getenv("622522768")
+TELEGRAM_BOT_TOKEN = "8799281877:AAHuImnbo4676epEZKKmRuMRR5skmR-0F2g"
+TELEGRAM_CHAT_ID = "622522768"
 
-
-def send_telegram(name, phone, service, comment):
-    if not TELEGRAM_TOKEN:
-        print("ERROR: TELEGRAM_TOKEN is empty")
+def send_telegram_message(text):
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        print("Telegram env not set")
         return False
 
-    if not TELEGRAM_CHAT_ID:
-        print("ERROR: TELEGRAM_CHAT_ID is empty")
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": text
+    }
+
+    try:
+        r = requests.post(url, json=payload, timeout=10)
+        print("TG:", r.status_code, r.text)
+        return r.status_code == 200
+    except Exception as e:
+        print("Telegram error:", e)
         return False
 
-    text = f"""Новая заявка AqylFlow
+@app.route("/")
+def index():
+    return render_template("index.html")
 
-Имя: {name}
-Телефон: {phone}
-Услуга: {service}
-Комментарий: {comment}
-"""
+@app.route("/submit", methods=["POST"])
+def submit():
+    name = request.form.get("name", "").strip()
+    phone = request.form.get("phone", "").strip()
+    service = request.form.get("service", "").strip()
+    comment = request.form.get("comment", "").strip()
 
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-
-    response = requests.post(
-        url,
-        data={
-            "chat_id": TELEGRAM_CHAT_ID,
-            "text": text
-        },
-        timeout=15
+    text = (
+        "Новая заявка с сайта AqylFlow\n"
+        f"Имя: {name}\n"
+        f"Телефон: {phone}\n"
+        f"Услуга: {service}\n"
+        f"Комментарий: {comment}"
     )
 
-    print("TELEGRAM STATUS:", response.status_code)
-    print("TELEGRAM RESPONSE:", response.text)
+    sent = send_telegram_message(text)
 
-    return response.status_code == 200
-
-
-@app.route("/", methods=["GET", "POST"])
-def home():
-    message = ""
-
-    if request.method == "POST":
-        name = request.form.get("name", "").strip()
-        phone = request.form.get("phone", "").strip()
-        service = request.form.get("service", "").strip()
-        comment = request.form.get("comment", "").strip()
-
-        if not name or not phone or not service:
-            message = "Заполните имя, телефон и услугу"
-            return render_template("index.html", message=message)
-
-        ok = send_telegram(name, phone, service, comment)
-
-        if ok:
-            return redirect(url_for("home", success=1))
-        else:
-            return redirect(url_for("home", error=1))
-
-    if request.args.get("success"):
-        message = "Заявка отправлена"
-
-    if request.args.get("error"):
-        message = "Ошибка отправки в Telegram"
-
-    return render_template("index.html", message=message)
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    if sent:
+        return jsonify({"ok": True, "message": "Заявка отправлена"})
+    return jsonify({"ok": False, "message": "Ошибка отправки в Telegram"}), 500
